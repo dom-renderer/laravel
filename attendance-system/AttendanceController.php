@@ -69,8 +69,47 @@ class AttendanceController extends Controller
         if ($workedHours != 0) {
             $time = gmdate('H:i:s', $workedHours);
         }
-      
-        return view('master.attendance.index', compact('moduleName', 'date', 'entries', 'time'));
+
+        $showCheckOutForBreakBtn = $showCheckInFromBreakBtn = $showCheckOutBtn = $showCheckInBtn = false;
+
+        $i = Attendance::myAttendanceForToday()->checkIn()->count();
+        $o = Attendance::myAttendanceForToday()->checkOut()->count();
+        $bI = Attendance::myAttendanceForToday()->breakIn()->count();
+        $bO = Attendance::myAttendanceForToday()->breakOut()->count();
+
+        if ($i > 0) {
+            if ($i == $o) {
+                $showCheckInBtn = true;
+            }
+        } else {
+            $showCheckInBtn = true;
+        }
+
+        if ($i > 0) {
+            if ($i == $o + 1) {
+                if ($bO == $bI) { 
+                    $showCheckOutBtn = true;
+                }
+            }
+        }
+
+        if ($i > 0) {
+            if ($i == $o + 1) {
+                if ($bO > 0 && $bO == $bI  + 1) {
+                    $showCheckInFromBreakBtn = true;
+                }
+            }
+        }
+
+        if ($i > 0) {
+            if ($i == $o + 1) {
+                if ($bO == $bI) {
+                    $showCheckOutForBreakBtn = true;
+                }
+            }
+        }
+
+        return view('master.attendance.index', compact('moduleName', 'date', 'entries', 'time', 'showCheckOutForBreakBtn', 'showCheckInFromBreakBtn', 'showCheckOutBtn', 'showCheckInBtn'));
     }
 
     public function in() {
