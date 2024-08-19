@@ -11,13 +11,22 @@
     <div class="card-body text-center">
 
         <div class="form-group">
-            <a href="{{ route('check-in') }}" class="btn btn-success"> CHECK IN </a>
-            <a href="{{ route('check-out') }}" class="btn btn-danger"> CHECK OUT </a>
+            @if($showCheckInBtn)
+                <a href="{{ route('check-in') }}" class="btn btn-success"> CHECK IN </a>
+            @endif
+            @if($showCheckOutBtn)
+                <a href="{{ route('check-out') }}" class="btn btn-danger"> CHECK OUT </a>
+            @endif
         </div>
 
         <div class="form-group">
-            <a href="{{ route('break-out') }}" class="btn btn-success"> CHECK OUT FOR BREAK </a>
+            @if($showCheckOutForBreakBtn)
+                <a href="{{ route('break-out') }}" class="btn btn-success"> CHECK OUT FOR BREAK </a>
+            @endif
+
+            @if($showCheckInFromBreakBtn)
             <a href="{{ route('break-in') }}" class="btn btn-danger"> CHECK IN FROM BREAK </a>
+            @endif
         </div>
 
         <div class="form-group">
