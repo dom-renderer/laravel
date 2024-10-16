@@ -87,18 +87,11 @@ name: ‘App’
 </script>
 
 Step:3(app.js)
+import {createApp} from 'vue'
+import App from './App.vue'
+import router from './router'
 
-import {createApp} from ‘vue’
-
-import App from ‘./App.vue’
-
-import router from ‘./router/Index’
-
-createApp(App)
-
-.use(router)
-
-.mount(‘#app’)
+createApp(App).use(router).mount('#app')
 
 Step:4 (AuthenticatedLayout file creation in the layout folder “resources/js/layout/AuthenticatedLayout.vue) *** optional**
 
@@ -126,96 +119,37 @@ Step:4 (AuthenticatedLayout file creation in the layout folder “resources/js/l
 
 Step:5(router folder creating in resources/js/router)** optional if you use AuthenticatedLayout.vue
 
-import { createRouter, createWebHistory } from ‘vue-router’;
-
-import AuthenticatedLayout from ‘@/layouts/AuthenticatedLayout.vue’;
+import { createRouter, createWebHistory } from 'vue - router';
+import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 
 const routes = [
-
-{
-
-path: ‘/’,
-
-component: AuthenticatedLayout,
-
-children: [
-
-{
-
-path: ‘’,
-
-name: ‘Home’,
-
-component: () => import(‘@/pages/Home.vue’)
-
-},
-
-{
-
-path: ‘/about’,
-
-name: ‘About’,
-
-component: () => import(‘@/pages/About.vue’)
-
-}
-
-]
-
-}
-
+    {
+        path: '/',
+        component: AuthenticatedLayout,
+        children: [
+            {
+                path: '',
+                name: 'Home',
+                component: () => import('@/pages/Home.vue')
+            },
+            {
+                path: '/about',
+                name: 'About',
+                component: () => import('@/pages/About.vue')
+            }
+        ]
+    }
 ];
 
 const router = createRouter({
-
-history: createWebHistory(),
-
-routes
-
+    history: createWebHistory(),
+    routes
 });
 
 export default router;
-
-Step:4(not creating the AuthenticatedLayout.vue) then just router/index.js
-
-import { createRouter, createWebHistory } from ‘vue-router’;
-
-const routes = [
-
-{
-
-path: “/”,
-
-name: ‘Home’,
-
-component: () => import(‘@/pages/Home.vue’)
-
-},
-
-{
-
-path: ‘/about’,
-
-name: ‘About’,
-
-component: () => import(‘@/pages/About.vue’)
-
-}
-
-];
-
-const router = createRouter({
-
-history: createWebHistory(),
-
-routes
-
-});
-
-export default router;
-
+===================================================
 Tailwind Css setup
-
+===================================================
 https://tailwindcss.com/docs/guides/laravel (follow the official guidelines)
 
 Custom button
@@ -230,28 +164,17 @@ Custom button
 <script setup >
 
 defineProps ({
-
 bgText: {
-
 type: String,
-
 required: true,
-
-default: ‘Submit’
-
+default: 'Submit'
 },
-
 bgColor: String
-
 })
 
-const emits = defineEmits([‘buttonClick’])
-
+const emits = defineEmits(['buttonClick'])
 const handleButton = () => {
-
-// console.log(‘button clicked’)
-
-emits(‘buttonClick’);
+emits('buttonClick');
 
 }
 
