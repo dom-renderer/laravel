@@ -1,0 +1,335 @@
+INSTALL VUE IN LARAVEL
+-npm install
+-npm install vue vue-loader
+-npm i @vitejs/plugin-vue
+
+//vite.config.js
+***
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+import vue from '@vitejs/plugin-vue'
+
+export default defineConfig({
+    plugins: [
+        vue(),
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+***
+
+//app.js
+***
+import {createApp} from 'vue'
+import App from './App.vue'
+
+createApp(App).mount('#app')
+***
+
+Step 7: Create File App.vue Inside Folder resources/js
+
+<template>
+
+<h1>
+
+How To Install Vue 3 in Laravel 10 : ZWebCourses :)
+
+</h1>
+
+</template>
+
+Step 8: Edit File web.php Inside Folder routes
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+Route::get(‘/’, function () {
+
+return view(‘app’);
+
+})
+
+->name(‘application’);
+
+Step 9: Run PHP Local Server
+
+php artisan serve
+
+Step 10: Run Node Local Server
+
+npm run dev
+
+Setting up vue router in laravel 10
+Step:1(install vue router)
+
+npm install vue-router@4
+
+Step:2(App.vue)
+
+<template>
+
+<router-view></router-view>
+
+</template>
+
+<script>
+
+export default {
+
+name: ‘App’
+
+}
+
+</script>
+
+Step:3(app.js)
+
+import {createApp} from ‘vue’
+
+import App from ‘./App.vue’
+
+import router from ‘./router/Index’
+
+createApp(App)
+
+.use(router)
+
+.mount(‘#app’)
+
+Step:4 (AuthenticatedLayout file creation in the layout folder “resources/js/layout/AuthenticatedLayout.vue) *** optional**
+
+<template>
+
+<div>
+
+<div class=”text-2xl”>Top bar</div>
+
+</div>
+
+<! — sidebar →
+
+<div>
+
+<router-link to=”/”>Home</router-link>
+
+<router-link to=”/about”>About</router-link>
+
+</div>
+
+<RouterView />
+
+</template>
+
+Step:5(router folder creating in resources/js/router)** optional if you use AuthenticatedLayout.vue
+
+import { createRouter, createWebHistory } from ‘vue-router’;
+
+import AuthenticatedLayout from ‘@/layouts/AuthenticatedLayout.vue’;
+
+const routes = [
+
+{
+
+path: ‘/’,
+
+component: AuthenticatedLayout,
+
+children: [
+
+{
+
+path: ‘’,
+
+name: ‘Home’,
+
+component: () => import(‘@/pages/Home.vue’)
+
+},
+
+{
+
+path: ‘/about’,
+
+name: ‘About’,
+
+component: () => import(‘@/pages/About.vue’)
+
+}
+
+]
+
+}
+
+];
+
+const router = createRouter({
+
+history: createWebHistory(),
+
+routes
+
+});
+
+export default router;
+
+Step:4(not creating the AuthenticatedLayout.vue) then just router/index.js
+
+import { createRouter, createWebHistory } from ‘vue-router’;
+
+const routes = [
+
+{
+
+path: “/”,
+
+name: ‘Home’,
+
+component: () => import(‘@/pages/Home.vue’)
+
+},
+
+{
+
+path: ‘/about’,
+
+name: ‘About’,
+
+component: () => import(‘@/pages/About.vue’)
+
+}
+
+];
+
+const router = createRouter({
+
+history: createWebHistory(),
+
+routes
+
+});
+
+export default router;
+
+Tailwind Css setup
+
+https://tailwindcss.com/docs/guides/laravel (follow the official guidelines)
+
+Custom button
+<! — resources/js/components/CustomButton.vue →
+
+<template>
+
+<button class=” text-white px-4 py-2 rounded” :class=”bgColor” @click=”handleButton”>{{ bgText }}</button>
+
+</template>
+
+<script setup >
+
+defineProps ({
+
+bgText: {
+
+type: String,
+
+required: true,
+
+default: ‘Submit’
+
+},
+
+bgColor: String
+
+})
+
+const emits = defineEmits([‘buttonClick’])
+
+const handleButton = () => {
+
+// console.log(‘button clicked’)
+
+emits(‘buttonClick’);
+
+}
+
+</script>
+
+<style scoped>
+
+.custom-button {
+
+background-color: #4CAF50;
+
+border: none;
+
+color: white;
+
+padding: 15px 32px;
+
+text-align: center;
+
+text-decoration: none;
+
+display: inline-block;
+
+font-size: 16px;
+
+margin: 4px 2px;
+
+cursor: pointer;
+
+}
+
+</style>
+
+Home.vue
+<template>
+
+<div>
+
+<div class=”text-2xl”>This is a home vue page</div>
+
+<div>
+
+<CustomButton
+
+:bgText=”buttonText”
+
+bgColor=”bg-[#4CAF50]”
+
+@buttonClick=”handleButtonClick”
+
+/>
+
+</div>
+
+</div>
+
+</template>
+
+<script setup>
+
+import CustomButton from ‘@/components/buttons/CustomButton.vue’;
+
+import { ref } from ‘vue’;
+
+const buttonText = ref(‘delete’);
+
+const fetchData = () => {
+
+console.log(‘fetched data’);
+
+}
+
+const handleButtonClick = () => {
+
+// console.log(‘button clicked’)
+
+fetchData();
+
+}
+
+</script>
