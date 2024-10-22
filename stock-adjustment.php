@@ -48,7 +48,7 @@ class StockController extends Controller
                             'store_id' => $store,
                             'opening_stock' => $totalInventoryStock,
                             'closing_stock' => $thisRequestClosingStock,
-                            'sold_stock' => self::totalSale($totalInventoryStock, $thisRequestClosingStock),
+                            'sold_stock' => $totalInventoryStock - $thisRequestClosingStock,
                             'date' => $date
                         ]);
 
@@ -58,7 +58,7 @@ class StockController extends Controller
                             'store_id' => $store,
                             'unit_id' => $unitId,
                             'type' => 0,
-                            'quantity' => $thisRequestClosingStock,
+                            'quantity' => $thisRequestClosingStock - $lastRecord->closing_stock,
                             'date' => $date
                         ]);
 
@@ -75,7 +75,7 @@ class StockController extends Controller
                         'store_id' => $store,
                         'opening_stock' => $lastRecord->closing_stock,
                         'closing_stock' => $thisRequestClosingStock,
-                        'sold_stock' => self::totalSale($lastRecord->closing_stock, $thisRequestClosingStock),
+                        'sold_stock' => $lastRecord->closing_stock - $thisRequestClosingStock,
                         'date' => $date
                     ]);
 
@@ -113,7 +113,7 @@ class StockController extends Controller
                             'store_id' => $store,
                             'opening_stock' => $totalInventoryStock,
                             'closing_stock' => $thisRequestClosingStock,
-                            'sold_stock' => self::totalSale($totalInventoryStock, $thisRequestClosingStock),
+                            'sold_stock' => $totalInventoryStock - $thisRequestClosingStock,
                             'date' => $date
                         ]);
 
@@ -123,7 +123,7 @@ class StockController extends Controller
                             'store_id' => $store,
                             'unit_id' => $unitId,
                             'type' => 0,
-                            'quantity' => $thisRequestClosingStock,
+                            'quantity' => $thisRequestClosingStock - $lastRecord->closing_stock,
                             'date' => $date
                         ]);
 
@@ -140,7 +140,7 @@ class StockController extends Controller
                         'store_id' => $store,
                         'opening_stock' => $lastRecord->closing_stock,
                         'closing_stock' => $thisRequestClosingStock,
-                        'sold_stock' => self::totalSale($lastRecord->closing_stock, $thisRequestClosingStock),
+                        'sold_stock' => $lastRecord->closing_stock - $thisRequestClosingStock,
                         'date' => $date
                     ]);
 
