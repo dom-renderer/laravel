@@ -98,28 +98,36 @@ class StockController extends Controller
 
                 } else {
 
-                    if ($thisRequestOpeningStock == $thisRequestClosingStock) {
+                    $stockAddedFromDelivery = 0;
+
+                    if (StockAdjustmentLog::where('is_delivery', true)->where('store_id', $store)->where('date', $date)->where('unit_id', $unitId)->exists()) {
+                        $stockAddedFromDelivery = StockAdjustmentLog::where('is_delivery', true)->where('store_id', $store)->where('date', $date)->where('unit_id', $unitId)->orderBy('id', 'DESC')->first()->closing_stock;
+                    }
 
                         /** Opening Stock **/
-
-                        $stockAddedFromDelivery = 0;
-
-                        if (StockAdjustmentLog::where('is_delivery', false)->where('store_id', $store)->where('date', $date)->where('unit_id', $unitId)->exists()) {
-
-                        }
                         
                         StockAdjustmentLog::create([
                             'unit_id' => $unitId,
                             'store_id' => $store,
-                            'opening_stock' => (isset($requestOpening[$index]) ? $requestOpening[$index] : 0) + $stockAddedFromDelivery,
-                            'closing_stock' => (isset($requestOpening[$index]) ? $requestOpening[$index] : 0) + $stockAddedFromDelivery
+                            'opening_stock' => $thisRequestOpeningStock + $stockAddedFromDelivery,
+                            'closing_stock' => $thisRequestOpeningStock + $stockAddedFromDelivery,
+                            'sold_stock' => 0,
+                            'date' => $date
                         ]);
 
                         /** Opening Stock **/
 
-                    } else {
+                        /** Stock addition **/
 
-                    }
+                        Stock::create([
+                            'store_id' => $store,
+                            'unit_id' => $unitId,
+                            'quantity' => $thisRequestOpeningStock,
+                            'type' => 0,
+                            'date' => $date
+                        ]);
+
+                        /** Stock addition **/
 
                 }
             }
