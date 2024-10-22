@@ -192,6 +192,8 @@ class StockController extends Controller
             }
         }
 
+        DB::commit();
+        return response()->json(['success' => 'Stock updated successfully.']);
     }
 
     public static function totalSale($opening, $closing) {
