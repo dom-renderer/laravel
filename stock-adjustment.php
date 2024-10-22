@@ -58,7 +58,8 @@ class StockController extends Controller
                             'store_id' => $store,
                             'unit_id' => $unitId,
                             'type' => 0,
-                            'quantity' => $thisRequestClosingStock
+                            'quantity' => $thisRequestClosingStock,
+                            'date' => $date
                         ]);
 
                         /** Stock addition **/
@@ -84,7 +85,8 @@ class StockController extends Controller
                         'store_id' => $store,
                         'unit_id' => $unitId,
                         'type' => 1,
-                        'quantity' => $lastRecord->closing_stock - $thisRequestClosingStock
+                        'quantity' => $lastRecord->closing_stock - $thisRequestClosingStock,
+                        'date' => $date
                     ]);
 
                     /** Stock deduction **/
@@ -121,7 +123,8 @@ class StockController extends Controller
                             'store_id' => $store,
                             'unit_id' => $unitId,
                             'type' => 0,
-                            'quantity' => $thisRequestClosingStock
+                            'quantity' => $thisRequestClosingStock,
+                            'date' => $date
                         ]);
 
                         /** Stock addition **/
@@ -147,7 +150,8 @@ class StockController extends Controller
                         'store_id' => $store,
                         'unit_id' => $unitId,
                         'type' => 1,
-                        'quantity' => $lastRecord->closing_stock - $thisRequestClosingStock
+                        'quantity' => $lastRecord->closing_stock - $thisRequestClosingStock,
+                        'date' => $date
                     ]);
 
                     /** Stock deduction **/
