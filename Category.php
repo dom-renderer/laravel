@@ -82,4 +82,59 @@ class Category extends Model
             })->values()
         ];
     }
+
+    public static function buildTreeFromIds(array $categoryIds)
+    {
+        $categories = self::whereIn('id', $categoryIds)
+            ->with('parent')
+            ->get();
+
+        $parentIds = $categories->pluck('parent_id')
+            ->filter()
+            ->diff($categoryIds)
+            ->unique();
+
+        if ($parentIds->isNotEmpty()) {
+            $parents = self::whereIn('id', $parentIds)->get();
+            $categories = $categories->merge($parents);
+        }
+
+        return self::buildTree($categories);
+    }
+
+    private static function buildTree(\Illuminate\Support\Collection $categories, $parentId = null)
+    {
+        $tree = [];
+
+        $nodes = $categories->where('parent_id', $parentId);
+
+        foreach ($nodes as $node) {
+            $children = self::buildTree($categories, $node->id);
+            
+            $tree[] = [
+                'id' => $node->id,
+                'name' => $node->name,
+                'children' => $children,
+                'parent_id' => $node->parent_id,
+                'has_children' => count($children) > 0,
+                'level' => self::calculateLevel($categories, $node)
+            ];
+        }
+
+        return $tree;
+    }
+
+    private static function calculateLevel(\Illuminate\Support\Collection $categories, Category $node)
+    {
+        $level = 0;
+        $current = $node;
+
+        while ($current->parent_id !== null && $current->parent_id !== 0) {
+            $level++;
+            $current = $categories->firstWhere('id', $current->parent_id);
+            if (!$current) break;
+        }
+
+        return $level;
+    }
 }
