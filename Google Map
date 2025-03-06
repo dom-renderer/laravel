@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Maps with Search in Bootstrap Modal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #map {
+            width: 100%;
+            height: 400px;
+        }
+        .pac-container {
+            z-index: 1051 !important; /* Ensure dropdown appears above modal */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mt-5">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mapModal">
+            Open Map
+        </button>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mapModalLabel">Select Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="searchBox" class="form-control mb-2" placeholder="Search location...">
+                    <div id="map"></div>
+                </div>
+                <div class="modal-footer">
+                    <span id="coordinates" class="me-auto text-muted"></span>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&libraries=places&callback=initMap" async defer></script>
+    <script>
+        let map;
+        let marker;
+        let searchBox;
+        let selectedLocation = { lat: 28.6139, lng: 77.2090 }; // Default to New Delhi
+
+        function initMap() {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: selectedLocation,
+                zoom: 10,
+            });
+
+            marker = new google.maps.Marker({
+                position: selectedLocation,
+                map: map,
+                draggable: true,
+            });
+
+            // Initialize Places Search Box
+            let input = document.getElementById("searchBox");
+            let autocomplete = new google.maps.places.Autocomplete(input);
+            autocomplete.bindTo("bounds", map);
+
+            autocomplete.addListener("place_changed", function () {
+                let place = autocomplete.getPlace();
+                if (!place.geometry) return;
+
+                let location = place.geometry.location;
+                setMarker(location);
+                map.setCenter(location);
+                map.setZoom(15);
+            });
+
+            // Click on map to place marker
+            map.addListener("click", function (event) {
+                setMarker(event.latLng);
+            });
+
+            marker.addListener("dragend", function (event) {
+                setMarker(event.latLng);
+            });
+        }
+
+        function setMarker(location) {
+            marker.setPosition(location);
+            selectedLocation = { lat: location.lat(), lng: location.lng() };
+            document.getElementById("coordinates").innerText = `Lat: ${selectedLocation.lat}, Lng: ${selectedLocation.lng}`;
+            console.log("Selected Location:", selectedLocation);
+        }
+
+        // Ensure map loads properly inside Bootstrap modal
+        document.getElementById('mapModal').addEventListener('shown.bs.modal', function () {
+            setTimeout(() => {
+                google.maps.event.trigger(map, "resize");
+                map.setCenter(selectedLocation);
+                marker.setPosition(selectedLocation);
+            }, 500);
+        });
+    </script>
+
+</body>
+</html>
