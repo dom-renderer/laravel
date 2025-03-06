@@ -1,0 +1,76 @@
+function getFirebaseAccessToken() {
+    $serviceAccountPath = storage_path('app/firebase.json'); // Path to service account JSON
+    $serviceAccount = json_decode(file_get_contents($serviceAccountPath), true);
+
+    if (!$serviceAccount) {
+        return false;
+    }
+
+    $header = [
+        'alg' => 'RS256',
+        'typ' => 'JWT'
+    ];
+
+    $issuedAt = time();
+    $expirationTime = $issuedAt + 3600; // Token valid for 1 hour
+
+    $payload = [
+        'iss' => $serviceAccount['client_email'], // Issuer (Service Account Email)
+        'scope' => 'https://www.googleapis.com/auth/firebase.messaging', // FCM Scope
+        'aud' => 'https://oauth2.googleapis.com/token', // Audience
+        'iat' => $issuedAt, // Issued At
+        'exp' => $expirationTime // Expiration Time
+    ];
+
+    // Encode header and payload to base64
+    $base64UrlHeader = base64UrlEncode(json_encode($header));
+    $base64UrlPayload = base64UrlEncode(json_encode($payload));
+
+    // Create the unsigned token
+    $unsignedToken = $base64UrlHeader . "." . $base64UrlPayload;
+
+    // Sign the token using RSA256 with the private key
+    $privateKey = $serviceAccount['private_key'];
+    openssl_sign($unsignedToken, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+
+    // Create the final JWT
+    $jwt = $unsignedToken . "." . base64UrlEncode($signature);
+
+    // Request access token from Google
+    $response = fetchAccessToken($jwt);
+
+    return $response['access_token'] ?? false;
+}
+
+function base64UrlEncode($data) {
+    return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+}
+
+function fetchAccessToken($jwt) {
+    $url = 'https://oauth2.googleapis.com/token';
+    $data = [
+        'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        'assertion' => $jwt
+    ];
+
+    $options = [
+        'http' => [
+            'header'  => "Content-Type: application/x-www-form-urlencoded\r\n",
+            'method'  => 'POST',
+            'content' => http_build_query($data),
+        ]
+    ];
+
+    $context  = stream_context_create($options);
+    $result = file_get_contents($url, false, $context);
+    
+    return json_decode($result, true);
+}
+
+// Usage
+$accessToken = getFirebaseAccessToken();
+if ($accessToken) {
+    echo "Access Token: " . $accessToken;
+} else {
+    echo "Failed to generate access token.";
+}
